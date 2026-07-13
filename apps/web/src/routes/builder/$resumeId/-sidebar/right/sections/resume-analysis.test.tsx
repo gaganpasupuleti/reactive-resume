@@ -102,6 +102,25 @@ describe("ResumeAnalysisSectionBuilder", () => {
 		});
 	});
 
+	it("prevents closing the job-description dialog while analysis is pending", () => {
+		const { rerender } = renderSection();
+		fireEvent.click(screen.getByRole("button", { name: /analyze resume/i }));
+		expect(screen.getByRole("dialog")).toBeInTheDocument();
+
+		useMutationMock.mockReturnValue({ mutate: mutateMock, isPending: true });
+		rerender(
+			<I18nProvider i18n={i18n}>
+				<ResumeAnalysisSectionBuilder />
+			</I18nProvider>,
+		);
+
+		expect(screen.getByRole("button", { name: /cancel/i })).toBeDisabled();
+		expect(screen.queryByRole("button", { name: /^close$/i })).not.toBeInTheDocument();
+
+		fireEvent.keyDown(document, { key: "Escape", code: "Escape" });
+		expect(screen.getByRole("dialog")).toBeInTheDocument();
+	});
+
 	it("keeps the existing score circle and scorecard layout", () => {
 		const source = readFileSync("src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx", "utf8");
 		expect(source).toContain("Overall Score");

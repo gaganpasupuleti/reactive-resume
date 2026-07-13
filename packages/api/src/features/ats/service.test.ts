@@ -79,6 +79,22 @@ describe("analyzeResumeWithCodeQuest", () => {
 		).rejects.toMatchObject({ code: "BAD_GATEWAY" });
 	});
 
+	it("returns BAD_REQUEST when serialized resume content is empty", async () => {
+		serializeResumeTextForAtsMock.mockReturnValue("   \n  ");
+
+		await expect(
+			analyzeResumeWithCodeQuest({
+				userId: "user-1",
+				resumeId: "resume-1",
+				jdText: "Required skills: SQL",
+			}),
+		).rejects.toMatchObject({
+			code: "BAD_REQUEST",
+			message: "Resume content is required before analysis can run.",
+		});
+		expect(analyzeWithCodeQuestAtsMock).not.toHaveBeenCalled();
+	});
+
 	it("returns NOT_FOUND when the resume does not belong to the user", async () => {
 		resumeServiceMock.getById.mockRejectedValue(new ORPCError("NOT_FOUND"));
 

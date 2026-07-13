@@ -80,15 +80,12 @@ export function ResumeAnalysisSectionBuilder() {
 		onError: (error) => {
 			const message = getOrpcErrorMessage(error, {
 				byCode: {
-					BAD_REQUEST: t({
-						comment: "Error description when ATS returns invalid resume analysis format",
-						message: "The ATS service returned an invalid analysis response.",
-					}),
 					BAD_GATEWAY: t({
 						comment: "Error description when ATS service cannot be reached during resume analysis",
 						message: "The ATS service is unavailable. Please try again.",
 					}),
 				},
+				allowServerMessage: true,
 				fallback: t({
 					comment: "Fallback error description when resume analysis request fails",
 					message: "Something went wrong while analyzing your resume.",
@@ -115,6 +112,11 @@ export function ResumeAnalysisSectionBuilder() {
 	const onOpenAnalyzeDialog = () => {
 		setDialogError(null);
 		setDialogOpen(true);
+	};
+
+	const onDialogOpenChange = (open: boolean) => {
+		if (!open && isPending) return;
+		setDialogOpen(open);
 	};
 
 	const onSubmitAnalysis = () => {
@@ -257,8 +259,8 @@ export function ResumeAnalysisSectionBuilder() {
 				)}
 			</div>
 
-			<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-				<DialogContent className="gap-5 sm:max-w-lg">
+			<Dialog open={dialogOpen} onOpenChange={onDialogOpenChange}>
+				<DialogContent className="gap-5 sm:max-w-lg" showCloseButton={!isPending}>
 					<DialogHeader className="pe-8">
 						<DialogTitle>
 							<Trans>Analyze Resume</Trans>

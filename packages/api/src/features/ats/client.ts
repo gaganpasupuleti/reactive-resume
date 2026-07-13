@@ -16,6 +16,8 @@ export class CodeQuestAtsInvalidResponseError extends Error {
 	}
 }
 
+export const CODEQUEST_ATS_REQUEST_TIMEOUT_MS = 30_000;
+
 function resolveBaseUrl(): string {
 	return (env.CODEQUEST_ATS_API_URL ?? "http://127.0.0.1:8200").replace(/\/$/, "");
 }
@@ -24,9 +26,11 @@ export async function analyzeWithCodeQuestAts(input: {
 	resumeText: string;
 	jdText: string;
 	fetchImpl?: typeof fetch;
+	timeoutMs?: number;
 }): Promise<CodeQuestAnalyzeResponse> {
 	const fetchImpl = input.fetchImpl ?? fetch;
 	const url = `${resolveBaseUrl()}/api/v1/service/analyze`;
+	const timeoutMs = input.timeoutMs ?? CODEQUEST_ATS_REQUEST_TIMEOUT_MS;
 
 	let response: Response;
 	try {
@@ -34,6 +38,7 @@ export async function analyzeWithCodeQuestAts(input: {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ resume_text: input.resumeText, jd_text: input.jdText }),
+			signal: AbortSignal.timeout(timeoutMs),
 		});
 	} catch {
 		throw new CodeQuestAtsUnavailableError();

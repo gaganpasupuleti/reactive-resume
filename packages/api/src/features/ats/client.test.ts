@@ -49,8 +49,23 @@ describe("analyzeWithCodeQuestAts", () => {
 			expect.objectContaining({
 				method: "POST",
 				body: JSON.stringify({ resume_text: "Resume body", jd_text: "Job description body" }),
+				signal: expect.any(AbortSignal),
 			}),
 		);
+	});
+
+	it("throws when the ATS request times out", async () => {
+		const fetchImpl = vi.fn((_url, init?: RequestInit) => {
+			return new Promise<Response>((_resolve, reject) => {
+				init?.signal?.addEventListener("abort", () => {
+					reject(new DOMException("The operation was aborted.", "AbortError"));
+				});
+			});
+		});
+
+		await expect(
+			analyzeWithCodeQuestAts({ resumeText: "Resume", jdText: "JD", fetchImpl, timeoutMs: 1 }),
+		).rejects.toBeInstanceOf(CodeQuestAtsUnavailableError);
 	});
 
 	it("throws when the ATS service is unavailable", async () => {

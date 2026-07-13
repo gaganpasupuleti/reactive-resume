@@ -15,6 +15,11 @@ export async function analyzeResumeWithCodeQuest(input: {
 	try {
 		const resume = await resumeService.getById({ id: input.resumeId, userId: input.userId });
 		const resumeText = serializeResumeTextForAts(resume.data);
+		if (!resumeText.trim()) {
+			throw new ORPCError("BAD_REQUEST", {
+				message: "Resume content is required before analysis can run.",
+			});
+		}
 		const atsResponse = await analyzeWithCodeQuestAts({
 			resumeText,
 			jdText: input.jdText,
