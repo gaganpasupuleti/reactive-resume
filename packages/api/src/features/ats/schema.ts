@@ -1,6 +1,6 @@
 import z from "zod";
 
-export const codeQuestScoreComponentsSchema = z.object({
+const codeQuestScoreComponentsSchema = z.object({
 	required_skill_coverage: z.number(),
 	preferred_skill_coverage: z.number(),
 	responsibility_alignment: z.number(),
@@ -9,7 +9,7 @@ export const codeQuestScoreComponentsSchema = z.object({
 	keyword_stuffing_penalty: z.number(),
 });
 
-export const codeQuestEvidenceSchema = z.object({
+const codeQuestEvidenceSchema = z.object({
 	requirement: z.string(),
 	resume_section: z.string(),
 	entry_id: z.string(),

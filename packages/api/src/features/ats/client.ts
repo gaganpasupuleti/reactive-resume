@@ -16,7 +16,7 @@ export class CodeQuestAtsInvalidResponseError extends Error {
 	}
 }
 
-export const CODEQUEST_ATS_REQUEST_TIMEOUT_MS = 30_000;
+const CODEQUEST_ATS_REQUEST_TIMEOUT_MS = 30_000;
 
 function resolveBaseUrl(): string {
 	return (env.CODEQUEST_ATS_API_URL ?? "http://127.0.0.1:8200").replace(/\/$/, "");
