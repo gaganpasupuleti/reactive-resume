@@ -75,6 +75,9 @@ export const env = createEnv({
 		REDIS_URL: z.url({ protocol: /redis(s)?/ }).optional(),
 		ENCRYPTION_SECRET: z.string().min(32, "ENCRYPTION_SECRET must be at least 32 characters").optional(),
 
+		// Code Quest ATS (optional; defaults to local dev service)
+		CODEQUEST_ATS_API_URL: z.url({ protocol: /https?/ }).optional(),
+
 		// Feature Flags
 		FLAG_DISABLE_SIGNUPS: z.stringbool().default(false),
 		FLAG_DISABLE_EMAIL_AUTH: z.stringbool().default(false),
